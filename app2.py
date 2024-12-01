@@ -26,6 +26,10 @@ if st.button("Predict Relative Humidity for next 2 hours"):
         # Combine date and time into a single datetime object (not used in prediction, just for reference)
         datetime_input = pd.to_datetime(f"{date} {time}")
 
+        # Define the required length based on the model's expected exogenous shape
+        required_length = 3416  # Adjust to the expected shape
+        st.write(f"Expected Exogenous Data Shape: ({required_length}, 3)")
+
         # Create a DataFrame for exogenous variables (temperature, time of day, and placeholder relative humidity)
         exog_row = pd.DataFrame({
             'Temperature': [temperature_ts],
@@ -33,11 +37,11 @@ if st.button("Predict Relative Humidity for next 2 hours"):
             'Relative_Humidity': [placeholder_relative_humidity]  # Add placeholder for relative humidity
         })
 
-        # Extend to match the required shape (3418, 3)
-        exog_data = pd.concat([exog_row] * 3418, ignore_index=True)
+        # Extend or truncate to match the required shape
+        exog_data = pd.concat([exog_row] * required_length, ignore_index=True)
 
         # Ensure the exogenous variables have the correct shape
-        st.write(f"Exogenous Data Shape: {exog_data.shape}")
+        st.write(f"Adjusted Exogenous Data Shape: {exog_data.shape}")
 
         # Make prediction (ensure the model expects these features and this format)
         prediction_2 = model_2.predict(start=datetime_input, end=datetime_input, exog=exog_data)
