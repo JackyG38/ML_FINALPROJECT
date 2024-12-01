@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  streamlit-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"  # Maps host port 8501 to container port 8501
+    environment:
+      # Environment variables for Streamlit configuration
+      STREAMLIT_SERVER_PORT: 8501
+      STREAMLIT_SERVER_ADDRESS: 0.0.0.0
+    volumes:
+      - .:/app  # Mounts the current directory to the container
+    restart: unless-stopped
