@@ -1,0 +1,47 @@
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment folders
+venv/
+.myenv/
+env/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor configurations
+.vscode/
+.idea/
+
+# Ignore Git-related files
+.git/
+.gitignore
+
+# Ignore Streamlit cache and logs
+.streamlit/
+logs/
+
+# Ignore large data files
+*.pkl
+*.csv
+*.xlsx
+*.json
+*.zip
+*.h5
+*.hdf5
+
+# Allow specific models or files if needed
+!sarimax_model .pkl
+
+# Ignore test scripts
+tests/
+*.test.py
+
+# Ignore other temporary files
+*.tmp
+*.log
+*.bak
+*.swp
+*.~*
