@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Load your Model 2
-model_2 = joblib.load('sarimax_model .pkl')
+model_2 = joblib.load('sarimax_model.pkl')
 
 # Streamlit application layout for Model 2
 st.title("Next 2 Hours: Humidity in Your Greenhouse")
