@@ -21,13 +21,13 @@ def main():
     model_1 = load_model('model_1d.pkl')
 
     # Application title and layout
-    st.title("Model 1: Multioutput Regression")
-    st.write("This application predicts yield based on input parameters using Model 1.")
+    st.title("CropCrafter: Unlock Your Perfect Yield")
+    st.write("Enter your Minimum Yield and Maximum Yield :")
 
     # Input fields for user interaction
     st.header("Input Fields for Yield Prediction")
-    yield_min = st.number_input("Yield Min:", min_value=1000.0, max_value=3000.0, value=1000.0)
-    yield_max = st.number_input("Yield Max:", min_value=3000.0, max_value=4000.0, value=3000.0)
+    yield_min = st.number_input("Yield Min: g/m^2", min_value=1000.0, max_value=3000.0, value=1000.0)
+    yield_max = st.number_input("Yield Max: g/m^2", min_value=3000.0, max_value=4000.0, value=3000.0)
 
     # Predict and display results
     if st.button("Predict Yield"):
@@ -40,7 +40,43 @@ def main():
 
         try:
             prediction = model_1.predict(input_data)
-            st.success(f"Predicted Yield: {prediction[0]}")
+
+            # Break down prediction into temperature, precipitation, and relative humidity
+            temperature, precipitation, relative_humidity = map(lambda x: round(x, 2), prediction[0])
+
+            st.success("Predicted Yield Components:")
+            st.write(f"Temperature: {temperature}°C")
+            st.write(f"Precipitation: {precipitation} mm")
+            st.write(f"Relative Humidity: {relative_humidity}%")
+
+            # Use the predicted values for calculations
+            seedling_temp = round(temperature * 0.25, 2)
+            tillering_temp = round(temperature * 0.30, 2)
+            flowering_temp = round(temperature * 0.25, 2)
+            harvesting_temp = round(temperature * 0.20, 2)
+
+            seedling_prec = round(precipitation * 0.25, 2)
+            tillering_prec = round(precipitation * 0.30, 2)
+            flowering_prec = round(precipitation * 0.25, 2)
+            harvesting_prec = round(precipitation * 0.20, 2)
+
+            seedling_hum = round(relative_humidity * 0.25, 2)
+            tillering_hum = round(relative_humidity * 0.30, 2)
+            flowering_hum = round(relative_humidity * 0.25, 2)
+            harvesting_hum = round(relative_humidity * 0.20, 2)
+
+            st.write("Tailored Factors for Every Growth Stage:")
+
+            # Create a table for displaying the calculations
+            table_data = {
+                "Stage": ["Seedling", "Tillering", "Flowering", "Harvesting"],
+                "Temperature (°C)": [seedling_temp, tillering_temp, flowering_temp, harvesting_temp],
+                "Precipitation (mm)": [seedling_prec, tillering_prec, flowering_prec, harvesting_prec],
+                "Relative Humidity (%)": [seedling_hum, tillering_hum, flowering_hum, harvesting_hum],
+            }
+
+            st.table(table_data)
+
         except Exception as e:
             st.error(f"An error occurred during prediction: {e}")
 
