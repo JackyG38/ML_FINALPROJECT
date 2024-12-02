@@ -2,51 +2,40 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load your Model 2
-model_2 = joblib.load('sarimax_model.pkl')
+# Load your SARIMAX model
+model_2 = joblib.load('sarimax_model .pkl')  
 
 # Streamlit application layout for Model 2
-st.title("Next 2 Hours: Humidity in Your Greenhouse")
+st.title("Next Hour: Humidity in Your Greenhouse")
 
 # Input fields for Model 2
 date = st.date_input("Date:")
 time = st.time_input("Time:")
-temperature_ts = st.number_input("Temperature:", min_value=-50.0, max_value=50.0, step=0.1)  # Fix the input type
+temperature_ts = st.number_input("Temperature (°C):", min_value=-50.0, max_value=50.0, step=0.1)
 
 # Extract the hour from the time input
-time_of_day = time.hour  # Directly access the hour attribute
+time_of_day = time.hour
 
-# Placeholder for the third input (Relative_Humidity)
-# Since we're predicting Relative Humidity, we can use a placeholder value like 0 or any default value
-# This will allow the model to work with the expected 3 inputs (Temperature, Time_of_Day, Relative_Humidity)
-placeholder_relative_humidity = 0.0  # Or any default value that makes sense for your model
-
-if st.button("Predict Relative Humidity for next 2 hours"):
+# Button to trigger prediction
+if st.button("Predict Relative Humidity for the next hour"):
     try:
-        # Combine date and time into a single datetime object (not used in prediction, just for reference)
+        # Combine date and time into a single datetime object
         datetime_input = pd.to_datetime(f"{date} {time}")
 
-        # Define the required length based on the model's expected exogenous shape
-        required_length = 3416  # Adjust to the expected shape
-        st.write(f"Expected Exogenous Data Shape: ({required_length}, 3)")
-
-        # Create a DataFrame for exogenous variables (temperature, time of day, and placeholder relative humidity)
-        exog_row = pd.DataFrame({
-            'Temperature': [temperature_ts],
-            'Time_of_Day': [time_of_day],
-            'Relative_Humidity': [placeholder_relative_humidity]  # Add placeholder for relative humidity
+        # Prepare exogenous variables (e.g., temperature and time of day)
+        exog_data = pd.DataFrame({
+            'Temperature': [temperature_ts],  # Only one time step
+            'Time_of_Day': [time_of_day],  # Current hour
         })
 
-        # Extend or truncate to match the required shape
-        exog_data = pd.concat([exog_row] * required_length, ignore_index=True)
+        # Check if the model expects a placeholder for Relative Humidity
+        if 'Relative_Humidity' in model_2.data.param_names:  # Assuming model expects it
+            exog_data['Relative_Humidity'] = 0.0  # Use a placeholder value
 
-        # Ensure the exogenous variables have the correct shape
-        st.write(f"Adjusted Exogenous Data Shape: {exog_data.shape}")
+        # Make prediction for the next hour
+        prediction_2 = model_2.predict(start=0, end=0, exog=exog_data)
 
-        # Make prediction (ensure the model expects these features and this format)
-        prediction_2 = model_2.predict(start=datetime_input, end=datetime_input, exog=exog_data)
-
-        # Display the prediction result rounded to 2 decimal places
-        st.write(f"Predicted Relative Humidity for the next 2 hours: {prediction_2[0]:.2f}%")
+        # Display the prediction rounded to 2 decimal places
+        st.write(f"Predicted Relative Humidity for the next hour: {prediction_2[0]:.2f}%")
     except Exception as e:
         st.error(f"Error during prediction: {e}")
